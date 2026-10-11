@@ -1,0 +1,143 @@
+{
+  "schema_version": 1,
+  "id": "2026-10-14-stock-agent-cost",
+  "example": true,
+  "pillar": "failures-lessons",
+  "format": "short",
+  "platforms": [
+    "tiktok",
+    "instagram"
+  ],
+  "title": "Stock-analysis agent monthly cost",
+  "hook": "My stock-analysis agent costs $2.66 a month.",
+  "source_repo": "Riftar/trading-signal-pipeline",
+  "artifacts": [
+    {
+      "id": "a1",
+      "kind": "screenshot",
+      "path_or_url": "capture/billing.png (example)",
+      "required": true,
+      "provided_by": "agent",
+      "added_by": "agent:assets",
+      "added_at": "2026-10-11T19:04:29+07:00"
+    },
+    {
+      "id": "a2",
+      "kind": "footage",
+      "path_or_url": null,
+      "required": true,
+      "provided_by": "human",
+      "added_by": "agent:assets",
+      "added_at": "2026-10-11T19:04:29+07:00",
+      "request": "10s desk shot, laptop showing dashboard"
+    }
+  ],
+  "script": {
+    "path": "script.md",
+    "beats": [
+      "hook",
+      "what it does",
+      "cost breakdown",
+      "lesson"
+    ],
+    "est_seconds": 32
+  },
+  "slides": [],
+  "caption": "What it really costs to run my stock-analysis agent. (example)",
+  "hashtags": [],
+  "voice": {
+    "provider": "elevenlabs",
+    "voice_id": "TBD",
+    "model": "TBD",
+    "fallback": {
+      "provider": "nexabot",
+      "voice_id": "Achernar"
+    }
+  },
+  "status": "scripted",
+  "owner": "agent:assets",
+  "claim": {
+    "by": "agent:assets",
+    "until": "2026-10-11T19:34:29+07:00",
+    "token": "c-392d6c"
+  },
+  "approved_by": "human",
+  "approved_at": "2026-10-11T19:04:29+07:00",
+  "review": null,
+  "history": [
+    {
+      "at": "2026-10-11T19:04:28+07:00",
+      "actor": "agent:ideas",
+      "action": "add",
+      "from": null,
+      "to": "idea",
+      "note": null
+    },
+    {
+      "at": "2026-10-11T19:04:29+07:00",
+      "actor": "human",
+      "action": "approve",
+      "from": "idea",
+      "to": "approved",
+      "note": null
+    },
+    {
+      "at": "2026-10-11T19:04:29+07:00",
+      "actor": "agent:script",
+      "action": "claim",
+      "from": "approved",
+      "to": "approved",
+      "note": "ttl 30m"
+    },
+    {
+      "at": "2026-10-11T19:04:29+07:00",
+      "actor": "agent:script",
+      "action": "update",
+      "from": "approved",
+      "to": "approved",
+      "note": "caption, script"
+    },
+    {
+      "at": "2026-10-11T19:04:29+07:00",
+      "actor": "agent:script",
+      "action": "move",
+      "from": "approved",
+      "to": "scripted",
+      "note": null
+    },
+    {
+      "at": "2026-10-11T19:04:29+07:00",
+      "actor": "agent:assets",
+      "action": "claim",
+      "from": "scripted",
+      "to": "scripted",
+      "note": "ttl 30m"
+    },
+    {
+      "at": "2026-10-11T19:04:29+07:00",
+      "actor": "agent:assets",
+      "action": "attach",
+      "from": "scripted",
+      "to": "scripted",
+      "note": "screenshot: capture/billing.png (example)"
+    },
+    {
+      "at": "2026-10-11T19:04:29+07:00",
+      "actor": "agent:assets",
+      "action": "request",
+      "from": "scripted",
+      "to": "scripted",
+      "note": "footage: 10s desk shot, laptop showing dashboard"
+    }
+  ],
+  "schedule_at": null,
+  "publisher": "manual",
+  "publisher_post_id": null,
+  "post_url": null,
+  "metrics": {
+    "h48": null,
+    "d7": null
+  },
+  "notes": "",
+  "cost": []
+}

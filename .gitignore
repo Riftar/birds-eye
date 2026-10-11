@@ -1,0 +1,5 @@
+.birdseye/
+.demo/
+__pycache__/
+*.pyc
+logs/

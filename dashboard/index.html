@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Birds Eye</title>
+<style>
+  :root { --bg:#f6f7f9; --card:#fff; --ink:#1d2330; --mute:#6b7280; --line:#e5e7eb; --acc:#2563eb; --warn:#b45309; --ok:#15803d; }
+  * { box-sizing: border-box; }
+  body { margin:0; font:14px/1.4 -apple-system, "Segoe UI", Roboto, sans-serif; background:var(--bg); color:var(--ink); }
+  header { display:flex; align-items:center; gap:12px; padding:12px 20px; background:#111827; color:#fff; }
+  header h1 { font-size:17px; margin:0; } header .tag { font-size:12px; color:#9ca3af; }
+  header .badge { margin-left:auto; background:#f59e0b; color:#111; padding:3px 10px; border-radius:99px; font-weight:600; font-size:12px; }
+  main { display:grid; grid-template-columns: 1fr 340px; gap:16px; padding:16px 20px; }
+  .board { display:grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap:8px; align-content:start; }
+  .col { background:#eef0f3; border-radius:8px; padding:6px; min-height:170px; }
+  .col h3 { margin:2px 4px 8px; font-size:11px; text-transform:uppercase; letter-spacing:.04em; color:var(--mute); display:flex; justify-content:space-between; }
+  .col.gate h3 { color:var(--warn); }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:6px; padding:7px; margin-bottom:6px; cursor:pointer; font-size:12px; }
+  .card:hover, .card.sel { border-color:var(--acc); }
+  .card b { display:block; margin-bottom:4px; font-weight:600; }
+  .pill { display:inline-block; font-size:10px; padding:1px 6px; border-radius:99px; background:#e0e7ff; color:#3730a3; margin:1px 2px 0 0; }
+  .pill.c { background:#dcfce7; color:#166534; } .pill.ex { background:#f3f4f6; color:#6b7280; } .pill.claim { background:#fef3c7; color:#92400e; }
+  aside section { background:var(--card); border:1px solid var(--line); border-radius:8px; padding:12px; margin-bottom:14px; }
+  aside h2 { font-size:14px; margin:0 0 8px; }
+  .wait { border-left:3px solid #f59e0b; padding:6px 8px; margin-bottom:8px; background:#fffbeb; border-radius:4px; }
+  .wait small { color:var(--mute); display:block; }
+  button { font:inherit; font-size:12px; border:1px solid var(--line); background:#fff; padding:3px 9px; border-radius:5px; cursor:pointer; margin-top:4px; }
+  button.ap { background:var(--ok); color:#fff; border-color:var(--ok); } button.rj { color:#b91c1c; }
+  .hist { list-style:none; padding:0; margin:0; font-size:12px; }
+  .hist li { border-left:2px solid var(--line); padding:2px 0 6px 10px; }
+  .hist .t { color:var(--mute); font-size:11px; }
+  .kv { font-size:12px; color:var(--mute); } .kv b { color:var(--ink); font-weight:500; }
+  .empty { color:var(--mute); font-size:12px; }
+  footer { padding:0 20px 16px; color:var(--mute); font-size:11px; }
+</style>
+</head>
+<body>
+<header><h1>Birds Eye</h1><span class="tag">prototype · reads posts/*/post.json live · times in WIB</span><span class="badge" id="badge">…</span></header>
+<main>
+  <div class="board" id="board"></div>
+  <aside>
+    <section><h2>Waiting on you</h2><div id="wait"></div></section>
+    <section><h2>Post detail</h2><div id="detail" class="empty">Click a card.</div></section>
+  </aside>
+</main>
+<footer>Gates (amber) can only be passed by you. Agents use <code>python -m birdseye</code>. Example data is tagged “example”.</footer>
+<script>
+let DATA = null, SEL = new URLSearchParams(location.search).get("sel");
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const wib = s => s ? s.slice(5,16).replace("T"," ") : "";
+async function load() {
+  DATA = await (await fetch("/api/posts")).json();
+  render();
+}
+function render() {
+  const gates = ["idea","review"];
+  document.getElementById("badge").textContent = DATA.waiting.length + " waiting on you";
+  document.getElementById("board").innerHTML = DATA.stages.map(st => {
+    const ps = DATA.posts.filter(p => p.status === st);
+    return `<div class="col ${gates.includes(st)?"gate":""}"><h3><span>${st}${gates.includes(st)?" ⛳":""}</span><span>${ps.length}</span></h3>` +
+      ps.map(p => `<div class="card ${p.id===SEL?"sel":""}" onclick="pick('${p.id}')"><b>${esc(p.title)}</b>
+        <span class="pill ${p.format==="carousel"?"c":""}">${p.format}</span>${p.example?'<span class="pill ex">example</span>':""}
+        ${p.claim && new Date(p.claim.until) > new Date()?`<span class="pill claim">🔒 ${esc(p.claim.by)}</span>`:""}<div class="kv">${esc(p.owner)}</div></div>`).join("") + `</div>`;
+  }).join("");
+  const w = DATA.waiting;
+  document.getElementById("wait").innerHTML = w.length ? w.map(x => {
+    const p = DATA.posts.find(p => p.id === x.id);
+    const btns = x.kind === "footage" ? `<small>attach with: birdseye --as human attach ${x.id} --kind footage --file …</small>` :
+      `<button class="ap" onclick="act('approve','${x.id}')">Approve</button> <button class="rj" onclick="act('reject','${x.id}')">Reject…</button>`;
+    return `<div class="wait"><b>${esc(x.what)}</b><small onclick="pick('${x.id}')" style="cursor:pointer">${esc(p.title)}</small>${btns}</div>`;
+  }).join("") : '<div class="empty">Nothing. Agents are working.</div>';
+  if (SEL) pick(SEL, true);
+}
+function pick(id, quiet) {
+  SEL = id; const p = DATA.posts.find(p => p.id === id); if (!p) return;
+  if (!quiet) render();
+  const arts = p.artifacts.map(a => `<li>${a.kind}: ${a.path_or_url ? esc(a.path_or_url.split("/").pop()) : "<i>requested from you: "+esc(a.request)+"</i>"}</li>`).join("");
+  const cost = p.cost.map(c => `<li>${c.provider} ${c.kind} $${c.usd} <i>${esc(c.note||"")}</i></li>`).join("");
+  document.getElementById("detail").innerHTML = `
+    <b>${esc(p.title)}</b>${p.example?' <span class="pill ex">example</span>':""}
+    <p style="margin:6px 0">“${esc(p.hook)}”</p>
+    <div class="kv">stage <b>${p.status}</b> · ${p.format} · ${p.pillar}<br>repo <b>${esc(p.source_repo)}</b> · owner <b>${esc(p.owner)}</b>
+    ${p.schedule_at?`<br>scheduled <b>${wib(p.schedule_at)} WIB</b> via ${p.publisher}`:""}</div>
+    ${arts?`<h4 style="margin:10px 0 4px;font-size:12px">Artifacts</h4><ul style="margin:0;padding-left:16px;font-size:12px">${arts}</ul>`:""}
+    ${cost?`<h4 style="margin:10px 0 4px;font-size:12px">Cost</h4><ul style="margin:0;padding-left:16px;font-size:12px">${cost}</ul>`:""}
+    <h4 style="margin:10px 0 4px;font-size:12px">History</h4>
+    <ul class="hist">${p.history.slice().reverse().map(h => `<li><span class="t">${wib(h.at)} · ${esc(h.actor)}</span><br>${h.action} ${h.from&&h.from!==h.to?h.from+" → ":""}${h.to||""} ${h.note?"· "+esc(h.note):""}</li>`).join("")}</ul>`;
+}
+async function act(kind, id) {
+  let body = {id};
+  if (kind === "reject") { const c = prompt("Why? (required)"); if (!c) return; body.comment = c; }
+  const r = await fetch("/api/" + kind, {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(body)});
+  if (!r.ok) alert((await r.json()).message);
+  SEL = id; load();
+}
+load(); setInterval(load, 5000);
+</script>
+</body>
+</html>

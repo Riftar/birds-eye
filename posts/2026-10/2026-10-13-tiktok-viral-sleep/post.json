@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "id": "2026-10-13-tiktok-viral-sleep",
+  "example": true,
+  "pillar": "how-i-automate",
+  "format": "short",
+  "platforms": [
+    "tiktok",
+    "instagram"
+  ],
+  "title": "tiktok-viral: 4 videos a day while I sleep",
+  "hook": "My AI posts 4 videos a day while I sleep. This is the pipeline.",
+  "source_repo": "Riftar/tiktok-viral",
+  "artifacts": [],
+  "script": null,
+  "slides": [],
+  "caption": "",
+  "hashtags": [],
+  "voice": {
+    "provider": "elevenlabs",
+    "voice_id": "TBD",
+    "model": "TBD",
+    "fallback": {
+      "provider": "nexabot",
+      "voice_id": "Achernar"
+    }
+  },
+  "status": "idea",
+  "owner": "agent:ideas",
+  "claim": null,
+  "approved_by": null,
+  "approved_at": null,
+  "review": null,
+  "history": [
+    {
+      "at": "2026-10-11T19:04:28+07:00",
+      "actor": "agent:ideas",
+      "action": "add",
+      "from": null,
+      "to": "idea",
+      "note": null
+    }
+  ],
+  "schedule_at": null,
+  "publisher": "manual",
+  "publisher_post_id": null,
+  "post_url": null,
+  "metrics": {
+    "h48": null,
+    "d7": null
+  },
+  "notes": "",
+  "cost": []
+}
