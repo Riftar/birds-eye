@@ -4,12 +4,16 @@ GET  /              dashboard HTML
 GET  /api/posts     all posts + waiting-on-you list
 POST /api/approve   {"id"}                    acts as human (dashboard session = human)
 POST /api/reject    {"id","comment","return_to"?}
+GET  /api/post?id=  card detail: post + stage path + asset checklist + refused attempts
+POST /api/comment   {"id","text"}             note, no state change
+GET  /files/<path>  read-only files under posts/
 Prototype: no auth. Real build must bind localhost and check the human key.
 """
 import json
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from urllib.parse import urlsplit
+from urllib.parse import urlsplit, parse_qs
+import mimetypes
 from . import core, status
 
 HTML = Path(__file__).resolve().parent.parent / "dashboard" / "index.html"
@@ -35,6 +39,20 @@ class Handler(BaseHTTPRequestHandler):
             posts = core.all_posts()
             return self._send(200, {"stages": core.STAGES, "posts": posts,
                                     "waiting": core.waiting_on_human(posts)})
+        if path == "/api/post":
+            pid = (parse_qs(urlsplit(self.path).query).get("id") or [""])[0]
+            try:
+                return self._send(200, core.detail(pid))
+            except core.BirdsEyeError as e:
+                return self._send(404, {"error": e.code, "message": e.message})
+        if path.startswith("/files/"):
+            # read-only view of files inside posts/ (no path traversal)
+            base = core.posts_dir().resolve()
+            f = (core.root() / path[len("/files/"):]).resolve()
+            if base in f.parents and f.is_file():
+                ctype = mimetypes.guess_type(f.name)[0] or "text/plain"
+                return self._send(200, f.read_bytes(), ctype + "; charset=utf-8" if ctype.startswith("text") else ctype)
+            return self._send(404, {"error": "not found"})
         self._send(404, {"error": "not found"})
 
     def do_POST(self):
@@ -42,9 +60,11 @@ class Handler(BaseHTTPRequestHandler):
         body = json.loads(self.rfile.read(n) or b"{}")
         try:
             if self.path == "/api/approve":
-                post = core.approve(body["id"], core.HUMAN, body.get("comment"))
+                post = core.approve(body["id"], core.HUMAN, body.get("comment"), body.get("at"))
             elif self.path == "/api/reject":
                 post = core.reject(body["id"], core.HUMAN, body.get("comment"), body.get("return_to"))
+            elif self.path == "/api/comment":
+                post = core.comment(body["id"], core.HUMAN, body.get("text"))
             else:
                 return self._send(404, {"error": "not found"})
             status.write()

@@ -32,6 +32,7 @@ def main(argv=None):
     rj = sub.add_parser("reject"); rj.add_argument("id"); rj.add_argument("--comment"); rj.add_argument("--return-to")
     r = sub.add_parser("run", help="STUB adapters"); r.add_argument("adapter", choices=["voice", "render", "carousel"])
     r.add_argument("id"); r.add_argument("--token"); r.add_argument("--fail-primary", action="store_true")
+    cm = sub.add_parser("comment"); cm.add_argument("id"); cm.add_argument("--text", required=True)
     sub.add_parser("publish", help="manual publisher: write publish/<year>-w<N>.json")
     sub.add_parser("status")
     sv = sub.add_parser("serve"); sv.add_argument("--port", type=int, default=8787)
@@ -82,6 +83,9 @@ def main(argv=None):
                 print(f"[STUB] hyperframes render -> {adapters.render(args.id, who, args.token).name}")
             else:
                 print(f"[STUB] carousel -> {len(adapters.carousel(args.id, who, args.token))} slide placeholders")
+        elif args.cmd == "comment":
+            core.comment(args.id, who, args.text)
+            _out(args, {"ok": True}, f"commented on {args.id}")
         elif args.cmd == "publish":
             for f in adapters.publish_week(who):
                 print(f"[STUB manual publisher] wrote {f.relative_to(core.root())}")

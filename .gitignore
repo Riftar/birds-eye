@@ -2,4 +2,4 @@
 .demo/
 __pycache__/
 *.pyc
-logs/
+logs/cost/

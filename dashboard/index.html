@@ -5,96 +5,361 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Birds Eye</title>
 <style>
-  :root { --bg:#f6f7f9; --card:#fff; --ink:#1d2330; --mute:#6b7280; --line:#e5e7eb; --acc:#2563eb; --warn:#b45309; --ok:#15803d; }
+  :root { --bg:#f5f6f8; --card:#fff; --ink:#151a24; --mute:#5f6b7a; --line:#e3e6eb; --acc:#2563eb;
+          --amber:#f59e0b; --amberbg:#fff8e6; --ok:#15803d; --okbg:#ecfdf3; --bad:#b91c1c; --badbg:#fef2f2;
+          --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
   * { box-sizing: border-box; }
-  body { margin:0; font:14px/1.4 -apple-system, "Segoe UI", Roboto, sans-serif; background:var(--bg); color:var(--ink); }
-  header { display:flex; align-items:center; gap:12px; padding:12px 20px; background:#111827; color:#fff; }
-  header h1 { font-size:17px; margin:0; } header .tag { font-size:12px; color:#9ca3af; }
-  header .badge { margin-left:auto; background:#f59e0b; color:#111; padding:3px 10px; border-radius:99px; font-weight:600; font-size:12px; }
-  main { display:grid; grid-template-columns: 1fr 340px; gap:16px; padding:16px 20px; }
-  .board { display:grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap:8px; align-content:start; }
-  .col { background:#eef0f3; border-radius:8px; padding:6px; min-height:170px; }
-  .col h3 { margin:2px 4px 8px; font-size:11px; text-transform:uppercase; letter-spacing:.04em; color:var(--mute); display:flex; justify-content:space-between; }
-  .col.gate h3 { color:var(--warn); }
-  .card { background:var(--card); border:1px solid var(--line); border-radius:6px; padding:7px; margin-bottom:6px; cursor:pointer; font-size:12px; }
-  .card:hover, .card.sel { border-color:var(--acc); }
-  .card b { display:block; margin-bottom:4px; font-weight:600; }
-  .pill { display:inline-block; font-size:10px; padding:1px 6px; border-radius:99px; background:#e0e7ff; color:#3730a3; margin:1px 2px 0 0; }
-  .pill.c { background:#dcfce7; color:#166534; } .pill.ex { background:#f3f4f6; color:#6b7280; } .pill.claim { background:#fef3c7; color:#92400e; }
-  aside section { background:var(--card); border:1px solid var(--line); border-radius:8px; padding:12px; margin-bottom:14px; }
-  aside h2 { font-size:14px; margin:0 0 8px; }
-  .wait { border-left:3px solid #f59e0b; padding:6px 8px; margin-bottom:8px; background:#fffbeb; border-radius:4px; }
+  body { margin:0; font:14px/1.5 -apple-system, "Segoe UI", Roboto, sans-serif; background:var(--bg); color:var(--ink); }
+  a { color:var(--acc); text-decoration:none; } a:hover { text-decoration:underline; }
+  code, .mono { font-family:var(--mono); font-size:13px; }
+  header.top { display:flex; align-items:center; gap:12px; padding:12px 24px; background:#111827; color:#fff; }
+  header.top h1 { font-size:17px; margin:0; cursor:pointer; } header.top .tag { font-size:12px; color:#9ca3af; }
+  header.top .badge { margin-left:auto; background:var(--amber); color:#111; padding:3px 10px; border-radius:99px; font-weight:600; font-size:12px; cursor:pointer; }
+  .pill { display:inline-block; font-size:12px; line-height:18px; padding:1px 8px; border-radius:99px; background:#e0e7ff; color:#3730a3; margin:2px 4px 2px 0; white-space:nowrap; }
+  .pill.carousel { background:#dcfce7; color:#166534; } .pill.ex { background:#eef0f3; color:#5f6b7a; }
+  .pill.claim { background:#fef3c7; color:#92400e; } .pill.plat { background:#f1f5f9; color:#334155; }
+  .pill.stub { background:#f3e8ff; color:#6b21a8; font-weight:600; letter-spacing:.02em; }
+  button { font:inherit; border:1px solid var(--line); background:#fff; padding:7px 14px; border-radius:7px; cursor:pointer; }
+  button:disabled { opacity:.45; cursor:not-allowed; }
+  button.ap { background:var(--ok); color:#fff; border-color:var(--ok); font-weight:600; }
+  button.rj { color:var(--bad); border-color:#fca5a5; font-weight:600; }
+  button.pri { background:var(--ink); color:#fff; border-color:var(--ink); }
+  textarea, select, input { font:inherit; border:1px solid var(--line); border-radius:7px; padding:8px 10px; width:100%; background:#fff; }
+  textarea { min-height:70px; resize:vertical; }
+
+  /* board */
+  #boardView main { display:grid; grid-template-columns: 1fr 330px; gap:16px; padding:16px 24px; }
+  .board { display:grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap:10px; align-content:start; }
+  .col { background:#eceef2; border-radius:9px; padding:7px; min-height:170px; }
+  .col h3 { margin:2px 4px 8px; font-size:12px; text-transform:uppercase; letter-spacing:.04em; color:var(--mute); display:flex; justify-content:space-between; }
+  .col.gate h3 { color:#b45309; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:7px; padding:9px; margin-bottom:7px; cursor:pointer; font-size:13px; }
+  .card:hover { border-color:var(--acc); box-shadow:0 1px 4px rgba(37,99,235,.15); }
+  .card b { display:block; margin-bottom:4px; }
+  .side section { background:var(--card); border:1px solid var(--line); border-radius:9px; padding:14px; }
+  .side h2 { font-size:16px; margin:0 0 10px; }
+  .wait { border-left:3px solid var(--amber); padding:8px 10px; margin-bottom:8px; background:var(--amberbg); border-radius:5px; cursor:pointer; }
   .wait small { color:var(--mute); display:block; }
-  button { font:inherit; font-size:12px; border:1px solid var(--line); background:#fff; padding:3px 9px; border-radius:5px; cursor:pointer; margin-top:4px; }
-  button.ap { background:var(--ok); color:#fff; border-color:var(--ok); } button.rj { color:#b91c1c; }
-  .hist { list-style:none; padding:0; margin:0; font-size:12px; }
-  .hist li { border-left:2px solid var(--line); padding:2px 0 6px 10px; }
-  .hist .t { color:var(--mute); font-size:11px; }
-  .kv { font-size:12px; color:var(--mute); } .kv b { color:var(--ink); font-weight:500; }
-  .empty { color:var(--mute); font-size:12px; }
-  footer { padding:0 20px 16px; color:var(--mute); font-size:11px; }
+
+  /* detail */
+  #detailView { display:none; }
+  .wrap { max-width:1220px; margin:0 auto; padding:18px 24px 40px; }
+  .crumb { font-size:14px; margin-bottom:12px; color:var(--mute); }
+  .panel { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:20px 22px; margin-bottom:16px; }
+  .panel h2 { font-size:20px; margin:0 0 14px; display:flex; align-items:center; gap:8px; }
+  .panel h2 .sub { font-size:13px; font-weight:400; color:var(--mute); margin-left:auto; }
+  .hd h1 { font-size:26px; line-height:1.25; margin:8px 0 6px; }
+  .hook { font-size:18px; color:#2b3442; border-left:4px solid var(--acc); padding:2px 0 2px 12px; margin:10px 0 16px; }
+  .meta { display:grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap:12px; border-top:1px solid var(--line); padding-top:14px; }
+  .meta div small { display:block; color:var(--mute); font-size:12px; text-transform:uppercase; letter-spacing:.04em; }
+  .meta div b { font-size:15px; font-weight:600; }
+  .count { font-family:var(--mono); color:#92400e; }
+  .stepper { display:flex; margin:20px 0 4px; }
+  .step { flex:1; text-align:center; position:relative; font-size:12px; color:var(--mute); }
+  .step::before { content:""; position:absolute; top:13px; left:-50%; width:100%; height:3px; background:var(--line); z-index:0; }
+  .step:first-child::before { display:none; }
+  .step.done::before, .step.cur::before { background:var(--ok); }
+  .dot { position:relative; z-index:1; width:28px; height:28px; border-radius:50%; margin:0 auto 6px; display:flex; align-items:center; justify-content:center;
+         background:#fff; border:3px solid var(--line); font-size:12px; font-weight:700; color:var(--mute); }
+  .step.done .dot { background:var(--ok); border-color:var(--ok); color:#fff; }
+  .step.cur .dot { border-color:var(--acc); color:var(--acc); box-shadow:0 0 0 4px rgba(37,99,235,.15); }
+  .step.cur { color:var(--ink); font-weight:700; }
+  .step .g { display:block; font-size:11px; color:#b45309; font-weight:600; }
+  .skipnote { font-size:12px; color:var(--mute); text-align:right; }
+  .gatebox { background:var(--amberbg); border:1px solid #fcd34d; border-radius:12px; padding:18px 22px; margin-bottom:16px; }
+  .gatebox h2 { font-size:20px; margin:0 0 4px; } .gatebox p { margin:0 0 14px; color:#5b4a1f; }
+  .gaterow { display:grid; grid-template-columns: 1fr 1fr; gap:18px; }
+  .gaterow label { display:block; font-size:13px; font-weight:600; margin:0 0 4px; }
+  .gaterow .act { display:flex; gap:10px; margin-top:10px; align-items:center; }
+  .err { color:var(--bad); font-size:13px; }
+  .grid2 > div:last-child { position:sticky; top:16px; }
+  .grid2 { display:grid; grid-template-columns: minmax(0,1.55fr) minmax(0,1fr); gap:16px; align-items:start; }
+  .beats { margin:0; padding-left:22px; font-size:15px; } .beats li { margin:4px 0; }
+  .slides { display:grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap:10px; }
+  .slide { aspect-ratio:4/5; border-radius:8px; background:linear-gradient(160deg,#1e293b,#334155); color:#fff; padding:10px; display:flex; flex-direction:column; font-size:13px; font-weight:600; line-height:1.3; }
+  .slide .n { font-size:11px; opacity:.7; font-weight:500; } .slide .h { margin-top:auto; }
+  .slide .f { font-size:11px; font-weight:500; margin-top:6px; } .slide .f a { color:#93c5fd; }
+  .slide.miss { background:repeating-linear-gradient(135deg,#f1f5f9,#f1f5f9 8px,#e2e8f0 8px,#e2e8f0 16px); color:var(--mute); }
+  .field { margin-top:16px; } .field small { display:block; font-size:12px; color:var(--mute); text-transform:uppercase; letter-spacing:.04em; margin-bottom:3px; }
+  .field p { margin:0; font-size:15px; }
+  .chk { list-style:none; padding:0; margin:0; }
+  .chk .stg { font-size:12px; text-transform:uppercase; letter-spacing:.04em; color:var(--mute); margin:12px 0 4px; font-weight:600; }
+  .chk .stg:first-child { margin-top:0; }
+  .chk li.it { display:flex; gap:10px; align-items:flex-start; padding:7px 10px; border-radius:7px; margin-bottom:4px; font-size:14px; }
+  .chk li.done { background:var(--okbg); } .chk li.missing { background:#f8fafc; } .chk li.requested { background:var(--amberbg); border:1px solid #fcd34d; }
+  .ic { width:20px; flex:none; text-align:center; font-weight:700; }
+  .done .ic { color:var(--ok); } .missing .ic { color:#94a3b8; } .requested .ic { color:#b45309; }
+  .it .rt { margin-left:auto; font-size:12px; color:var(--mute); text-align:right; white-space:nowrap; }
+  .nextline { margin-top:12px; font-size:14px; padding:9px 12px; border-radius:7px; background:#f1f5f9; }
+  .kv { display:grid; grid-template-columns: 110px 1fr; gap:6px 10px; font-size:14px; }
+  .kv dt { color:var(--mute); } .kv dd { margin:0; font-weight:500; }
+  table.cost { width:100%; border-collapse:collapse; font-size:13px; }
+  table.cost td, table.cost th { text-align:left; padding:6px 4px; border-bottom:1px solid var(--line); }
+  table.cost th { font-size:12px; color:var(--mute); font-weight:600; }
+  table.cost tfoot td { font-weight:700; border-bottom:0; }
+  .tl { list-style:none; margin:0; padding:0; }
+  .tl li { position:relative; padding:0 0 14px 34px; }
+  .tl li::before { content:""; position:absolute; left:11px; top:24px; bottom:0; width:2px; background:var(--line); }
+  .tl li:last-child::before { display:none; }
+  .av { position:absolute; left:0; top:0; width:24px; height:24px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; }
+  .tl .agent .av { background:#e0e7ff; color:#3730a3; } .tl .human .av { background:var(--ink); color:#fff; }
+  .tl .refused .av { background:var(--badbg); color:var(--bad); border:1px solid #fca5a5; }
+  .tl .who { font-weight:600; } .tl .human .who { color:var(--ink); } .tl .t { color:var(--mute); font-size:12px; margin-left:6px; }
+  .tl .what { font-size:14px; } .tl .note { font-size:13px; color:var(--mute); word-break:break-word; }
+  .tl .refused .what { color:var(--bad); }
+  .tl .human .bubble { background:#f8fafc; border:1px solid var(--line); border-radius:8px; padding:6px 10px; margin-top:4px; color:var(--ink); font-size:14px; }
+  .notes .c { border:1px solid var(--line); border-radius:8px; padding:8px 10px; margin-bottom:8px; font-size:14px; }
+  .notes .c small { color:var(--mute); display:block; font-size:12px; }
+  .empty { color:var(--mute); font-size:14px; }
 </style>
 </head>
 <body>
-<header><h1>Birds Eye</h1><span class="tag">prototype · reads posts/*/post.json live · times in WIB</span><span class="badge" id="badge">…</span></header>
-<main>
-  <div class="board" id="board"></div>
-  <aside>
-    <section><h2>Waiting on you</h2><div id="wait"></div></section>
-    <section><h2>Post detail</h2><div id="detail" class="empty">Click a card.</div></section>
-  </aside>
-</main>
-<footer>Gates (amber) can only be passed by you. Agents use <code>python -m birdseye</code>. Example data is tagged “example”.</footer>
+<header class="top"><h1 onclick="go('')">Birds Eye</h1><span class="tag">prototype · reads posts/*/post.json live · times in WIB</span><span class="badge" id="badge" onclick="go('')">…</span></header>
+
+<div id="boardView">
+  <main>
+    <div class="board" id="board"></div>
+    <aside class="side"><section><h2>Waiting on you</h2><div id="wait"></div></section><p style="color:var(--mute);font-size:13px;margin:10px 4px">Click any card for its full detail page.</p></aside>
+  </main>
+</div>
+
+<div id="detailView"><div class="wrap" id="detail"></div></div>
+
 <script>
-let DATA = null, SEL = new URLSearchParams(location.search).get("sel");
+const GATE_INTO = {approved:"Gate 1", scheduled:"Gate 2"};
+let DATA = null, D = null, DRAFT = {};
+const $ = id => document.getElementById(id);
 const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-const wib = s => s ? s.slice(5,16).replace("T"," ") : "";
-async function load() {
-  DATA = await (await fetch("/api/posts")).json();
-  render();
+const wib = s => s ? s.slice(0,16).replace("T"," ") : "";
+const wibShort = s => s ? s.slice(5,16).replace("T"," ") : "";
+const isHuman = a => a === "human";
+const fileA = (file, label) => file ? `<a href="/files/${file}" target="_blank">${esc(label || file.split("/").pop())}</a>` : "";
+const go = h => { location.hash = h ? "#/post/" + h : "#/"; };
+
+function route() {
+  const m = location.hash.match(/^#\/post\/(.+)$/);
+  if (m) { $("boardView").style.display = "none"; $("detailView").style.display = "block"; loadDetail(decodeURIComponent(m[1])); }
+  else { $("detailView").style.display = "none"; $("boardView").style.display = "block"; D = null; loadBoard(); }
 }
-function render() {
+window.addEventListener("hashchange", () => { DRAFT = {}; route(); });
+
+/* ---------- board ---------- */
+async function loadBoard() {
+  DATA = await (await fetch("/api/posts")).json();
+  $("badge").textContent = DATA.waiting.length + " waiting on you";
+  if (D) return;
   const gates = ["idea","review"];
-  document.getElementById("badge").textContent = DATA.waiting.length + " waiting on you";
-  document.getElementById("board").innerHTML = DATA.stages.map(st => {
+  $("board").innerHTML = DATA.stages.map(st => {
     const ps = DATA.posts.filter(p => p.status === st);
     return `<div class="col ${gates.includes(st)?"gate":""}"><h3><span>${st}${gates.includes(st)?" ⛳":""}</span><span>${ps.length}</span></h3>` +
-      ps.map(p => `<div class="card ${p.id===SEL?"sel":""}" onclick="pick('${p.id}')"><b>${esc(p.title)}</b>
-        <span class="pill ${p.format==="carousel"?"c":""}">${p.format}</span>${p.example?'<span class="pill ex">example</span>':""}
-        ${p.claim && new Date(p.claim.until) > new Date()?`<span class="pill claim">🔒 ${esc(p.claim.by)}</span>`:""}<div class="kv">${esc(p.owner)}</div></div>`).join("") + `</div>`;
+      ps.map(p => { const live = p.claim && new Date(p.claim.until) > new Date();
+        return `<div class="card" onclick="go('${p.id}')"><b>${esc(p.title)}</b>
+        <span class="pill ${p.format}">${p.format}</span>${p.example?'<span class="pill ex">example</span>':""}
+        ${live?`<span class="pill claim">🔒 ${esc(p.claim.by)}</span>`:""}<div style="color:var(--mute);font-size:12px">${esc(p.owner)}</div></div>`; }).join("") + `</div>`;
   }).join("");
-  const w = DATA.waiting;
-  document.getElementById("wait").innerHTML = w.length ? w.map(x => {
+  $("wait").innerHTML = DATA.waiting.length ? DATA.waiting.map(x => {
     const p = DATA.posts.find(p => p.id === x.id);
-    const btns = x.kind === "footage" ? `<small>attach with: birdseye --as human attach ${x.id} --kind footage --file …</small>` :
-      `<button class="ap" onclick="act('approve','${x.id}')">Approve</button> <button class="rj" onclick="act('reject','${x.id}')">Reject…</button>`;
-    return `<div class="wait"><b>${esc(x.what)}</b><small onclick="pick('${x.id}')" style="cursor:pointer">${esc(p.title)}</small>${btns}</div>`;
+    return `<div class="wait" onclick="go('${x.id}')"><b>${esc(x.what)}</b><small>${esc(p.title)}</small></div>`;
   }).join("") : '<div class="empty">Nothing. Agents are working.</div>';
-  if (SEL) pick(SEL, true);
 }
-function pick(id, quiet) {
-  SEL = id; const p = DATA.posts.find(p => p.id === id); if (!p) return;
-  if (!quiet) render();
-  const arts = p.artifacts.map(a => `<li>${a.kind}: ${a.path_or_url ? esc(a.path_or_url.split("/").pop()) : "<i>requested from you: "+esc(a.request)+"</i>"}</li>`).join("");
-  const cost = p.cost.map(c => `<li>${c.provider} ${c.kind} $${c.usd} <i>${esc(c.note||"")}</i></li>`).join("");
-  document.getElementById("detail").innerHTML = `
-    <b>${esc(p.title)}</b>${p.example?' <span class="pill ex">example</span>':""}
-    <p style="margin:6px 0">“${esc(p.hook)}”</p>
-    <div class="kv">stage <b>${p.status}</b> · ${p.format} · ${p.pillar}<br>repo <b>${esc(p.source_repo)}</b> · owner <b>${esc(p.owner)}</b>
-    ${p.schedule_at?`<br>scheduled <b>${wib(p.schedule_at)} WIB</b> via ${p.publisher}`:""}</div>
-    ${arts?`<h4 style="margin:10px 0 4px;font-size:12px">Artifacts</h4><ul style="margin:0;padding-left:16px;font-size:12px">${arts}</ul>`:""}
-    ${cost?`<h4 style="margin:10px 0 4px;font-size:12px">Cost</h4><ul style="margin:0;padding-left:16px;font-size:12px">${cost}</ul>`:""}
-    <h4 style="margin:10px 0 4px;font-size:12px">History</h4>
-    <ul class="hist">${p.history.slice().reverse().map(h => `<li><span class="t">${wib(h.at)} · ${esc(h.actor)}</span><br>${h.action} ${h.from&&h.from!==h.to?h.from+" → ":""}${h.to||""} ${h.note?"· "+esc(h.note):""}</li>`).join("")}</ul>`;
+
+/* ---------- detail ---------- */
+async function loadDetail(id) {
+  const r = await fetch("/api/post?id=" + encodeURIComponent(id));
+  if (!r.ok) { $("detail").innerHTML = `<div class="crumb"><a href="#/">← Board</a></div><div class="panel">Post not found: ${esc(id)}</div>`; return; }
+  D = await r.json();
+  fetch("/api/posts").then(r => r.json()).then(d => $("badge").textContent = d.waiting.length + " waiting on you");
+  renderDetail();
 }
-async function act(kind, id) {
-  let body = {id};
-  if (kind === "reject") { const c = prompt("Why? (required)"); if (!c) return; body.comment = c; }
-  const r = await fetch("/api/" + kind, {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(body)});
-  if (!r.ok) alert((await r.json()).message);
-  SEL = id; load();
+
+function claimHtml(c) {
+  if (!c) return `<b>none</b>`;
+  const left = new Date(c.until) - new Date();
+  if (left <= 0) return `<b>${esc(c.by)}</b><br><span style="color:var(--mute);font-size:13px">expired ${wibShort(c.until)} · free to take</span>`;
+  return `<b>🔒 ${esc(c.by)}</b><br><span style="font-size:13px">until ${wibShort(c.until)} · <span class="count" data-until="${c.until}"></span></span>`;
 }
-load(); setInterval(load, 5000);
+function tick() {
+  document.querySelectorAll(".count[data-until]").forEach(el => {
+    const s = Math.max(0, Math.floor((new Date(el.dataset.until) - new Date()) / 1000));
+    el.textContent = s ? `${Math.floor(s/60)}m ${String(s%60).padStart(2,"0")}s left` : "expired";
+  });
+}
+setInterval(tick, 1000);
+
+function stepper(p) {
+  const path = D.stages, cur = path.indexOf(p.status);
+  return `<div class="stepper">` + path.map((s, i) => {
+    const cls = p.status === "rejected" ? "" : i < cur ? "done" : i === cur ? "cur" : "";
+    return `<div class="step ${cls}"><div class="dot">${i < cur ? "✓" : i + 1}</div>${s}${GATE_INTO[s] ? `<span class="g">⛳ ${GATE_INTO[s]}</span>` : ""}</div>`;
+  }).join("") + `</div>` + (p.format === "carousel" ? `<div class="skipnote">Carousel: “voiced” is skipped</div>` : "");
+}
+
+function gateBox(p) {
+  if (!D.gate) return "";
+  const g2 = D.gate === "gate2";
+  const tomorrow = new Date(Date.now() + 7*3600e3 + 864e5).toISOString().slice(0,10) + "T19:00";
+  return `<div class="gatebox">
+    <h2>⛳ ${g2 ? "Gate 2 · Review the finished post" : "Gate 1 · Approve this idea"}</h2>
+    <p>${g2 ? "Agents are done. Approving schedules it for publishing; rejecting sends it back with your comment." :
+              "An agent proposed this idea. Approving lets the script agent start; rejecting closes it."} Only you can do this.</p>
+    <div class="gaterow">
+      <div>
+        ${g2 ? `<label for="gAt">Schedule (WIB)</label><input id="gAt" type="datetime-local" value="${DRAFT.at || tomorrow}" oninput="DRAFT.at=this.value">` : ""}
+        <label for="gNote" style="margin-top:${g2?10:0}px">Comment (optional)</label>
+        <input id="gNote" placeholder="e.g. go" value="${esc(DRAFT.note||"")}" oninput="DRAFT.note=this.value">
+        <div class="act"><button class="ap" onclick="approve()">Approve${g2 ? " & schedule" : ""}</button></div>
+      </div>
+      <div>
+        <label for="rjNote">Reject: what needs to change? (required)</label>
+        <textarea id="rjNote" oninput="DRAFT.rj=this.value; $('rjBtn').disabled=!this.value.trim()" placeholder="Required">${esc(DRAFT.rj||"")}</textarea>
+        <div class="act">
+          ${g2 ? `<select id="rjTo" style="width:auto" onchange="DRAFT.to=this.value">${D.return_to_options.map(s => `<option ${s===(DRAFT.to||"edited")?"selected":""}>${s}</option>`).join("")}</select>` : ""}
+          <button class="rj" id="rjBtn" onclick="reject()" ${DRAFT.rj && DRAFT.rj.trim() ? "" : "disabled"}>Reject${g2 ? " → send back" : ""}</button>
+          <span class="err" id="gErr"></span>
+        </div>
+      </div>
+    </div></div>`;
+}
+
+function requestBox(p) {
+  const reqs = p.artifacts.filter(a => a.provided_by === "human" && !a.path_or_url);
+  if (!reqs.length) return "";
+  return `<div class="gatebox"><h2>🎥 Waiting on you · footage to shoot</h2>
+    <p>Agents can't attach human-shot footage. They asked you for:</p>
+    ${reqs.map(a => `<div style="background:#fff;border:1px solid #fcd34d;border-radius:8px;padding:10px 12px;margin-bottom:8px">
+      <b style="font-size:15px">${esc(a.request)}</b><div style="font-size:13px;color:var(--mute)">${esc(a.kind)} · requested by ${esc(a.added_by)} · ${wib(a.added_at)}</div>
+      <div style="font-size:13px;margin-top:6px">When it's shot: <code>python -m birdseye --as human attach ${esc(p.id)} --kind ${esc(a.kind)} --file &lt;path&gt;</code></div></div>`).join("")}
+  </div>`;
+}
+
+function contentPanel(p) {
+  let body;
+  if (p.format === "short") {
+    const sc = p.script, f = sc && D.checklist.find(i => i.label === "Script beats");
+    body = sc ? `<ol class="beats">${sc.beats.map(b => `<li>${esc(b)}</li>`).join("")}</ol>
+      <div style="font-size:13px;color:var(--mute);margin-top:6px">~${sc.est_seconds}s · ${f && f.file ? fileA(f.file, "open script.md") : esc(sc.path)}</div>`
+      : `<div class="empty">No script yet. The script agent writes it after Gate 1.</div>`;
+  } else {
+    const pngs = D.checklist.filter(i => /^Slide \d+ PNG/.test(i.label));
+    body = p.slides.length ? `<div class="slides">${p.slides.map((s, i) => { const png = pngs[i];
+      return `<div class="slide ${png && png.state==="done" ? "" : "miss"}"><span class="n">${s.n} / ${p.slides.length}</span>
+        <span class="h">${esc(s.heading)}</span><span class="f">${png && png.file ? fileA(png.file, "placeholder PNG (stub)") : "not rendered"}</span></div>`; }).join("")}</div>`
+      : `<div class="empty">No slides yet. The script agent writes them after Gate 1.</div>`;
+  }
+  return `<div class="panel"><h2>${p.format === "short" ? "Script" : "Slides"}<span class="sub">${p.format === "short" ? "beats" : "4:5 · thumbnails are stub placeholders"}</span></h2>${body}
+    <div class="field"><small>Caption</small><p>${p.caption ? esc(p.caption) : '<span class="empty">not written yet</span>'}</p></div>
+    <div class="field"><small>Hashtags</small><p>${p.hashtags.length ? p.hashtags.map(h => `<span class="pill plat">${esc(h)}</span>`).join("") : '<span class="empty">none yet</span>'}</p></div></div>`;
+}
+
+function assetsPanel(p) {
+  const icon = {done:"✓", missing:"○", requested:"!"};
+  let lastStage = null, rows = "";
+  const curIdx = D.stages.indexOf(p.status);
+  D.checklist.forEach(i => {
+    if (i.stage !== lastStage) { const si = D.stages.indexOf(i.stage);
+      rows += `<li class="stg">Needed for ${i.stage}${si <= curIdx ? " ✓ passed" : si === curIdx + 1 ? " · next" : ""}</li>`; lastStage = i.stage; }
+    const right = i.state === "requested" ? `<b style="color:#b45309">requested from Riftar</b>`
+      : i.state === "done" ? `${i.file ? fileA(i.file) : `<span class="mono">${esc((i.path||"").split("/").pop())}</span>`}${i.by ? `<br>${esc(i.by)}` : ""}` : "missing";
+    rows += `<li class="it ${i.state}"><span class="ic">${icon[i.state]}</span><span>${esc(i.label)}</span><span class="rt">${right}</span></li>`;
+  });
+  const nx = D.next ? (D.missing_next.length ? `Can't move to <b>${D.next}</b> yet: ${D.missing_next.map(esc).join("; ")}` : `Ready to move to <b>${D.next}</b>${D.gate ? " once you pass the gate" : ""}.`) : "Final stage.";
+  return `<div class="panel"><h2>Assets checklist<span class="sub">${D.checklist.filter(i=>i.state==="done").length}/${D.checklist.length} done</span></h2>
+    <ul class="chk">${rows}</ul><div class="nextline">${nx}</div></div>`;
+}
+
+function historyPanel(p) {
+  // stable order: history is append-only, so array index breaks same-second ties;
+  // a refused attempt slots in after the last history event at or before its timestamp
+  const ev = p.history.map((h, i) => ({...h, seq: i, kind: isHuman(h.actor) ? "human" : "agent"}))
+    .concat(D.refused.map(r => ({at:r.at, actor:r.actor, action:"refused", error:r.error, note:r.message, command:r.command, kind:"refused",
+      seq: p.history.reduce((m, h, i) => h.at <= r.at ? i + 0.5 : m, -0.5)})))
+    .sort((a, b) => b.seq - a.seq)
+    // fold runs of the same agent attaching several files into one line
+    .reduce((out, h) => { const last = out[out.length - 1];
+      if (last && h.action === "attach" && last.action === "attach" && last.actor === h.actor) { last.n = (last.n || 1) + 1; last.files.unshift(h.note); }
+      else out.push(h.action === "attach" ? {...h, files: [h.note]} : h);
+      return out; }, [])
+    .map(h => h.files ? {...h, note: h.files.length > 1 ? h.files.map(f => f.split("/").pop()).join(", ") : h.files[0]} : h);
+  const verb = h => h.action === "refused" ? `✕ refused <b>${esc(h.command)}</b> · ${esc(h.error)}`
+    : h.action === "move" || h.action === "approve" || h.action === "reject" || h.action === "add" || h.action === "revert"
+      ? `${h.action} ${h.from && h.from !== h.to ? `<b>${h.from}</b> → ` : ""}<b>${h.to}</b>` : h.action + (h.n > 1 ? ` ×${h.n}` : "");
+  return `<div class="panel"><h2>History<span class="sub">newest first · ${p.history.length} events, ${D.refused.length} refused</span></h2>
+    <ul class="tl">${ev.map(h => `<li class="${h.kind}"><span class="av">${h.kind==="refused"?"✕":h.kind==="human"?"R":"AI"}</span>
+      <div><span class="who">${h.kind==="human" ? "Riftar (human)" : esc(h.actor)}</span><span class="t">${wib(h.at)}</span></div>
+      <div class="what">${verb(h)}</div>
+      ${h.note ? (h.kind==="human" && (h.action==="comment"||h.action==="reject"||h.action==="approve") ? `<div class="bubble">${esc(h.note)}</div>` : `<div class="note">${esc(h.note)}</div>`) : ""}</li>`).join("")}</ul></div>`;
+}
+
+function sidePanels(p) {
+  const v = p.voice, vArt = p.artifacts.find(a => a.kind === "voice" && a.path_or_url);
+  const used = vArt ? (vArt.path_or_url.includes("nexabot") ? "nexabot (fallback)" : "elevenlabs") : null;
+  const voice = p.format === "carousel" ? `<div class="empty">Carousels have no voiceover.</div>` : `
+    <dl class="kv"><dt>Provider</dt><dd>${esc(v.provider)}</dd><dt>Voice</dt><dd>${esc(v.voice_id)}</dd><dt>Model</dt><dd>${esc(v.model)}</dd>
+    <dt>Fallback</dt><dd>${esc(v.fallback.provider)} · ${esc(v.fallback.voice_id)}</dd>
+    <dt>Used</dt><dd>${used ? esc(used) + ' <span class="pill stub">STUB</span>' : '<span class="empty">not voiced yet</span>'}</dd></dl>`;
+  const posted = p.post_url ? `<a href="${esc(p.post_url)}" target="_blank">${esc(p.post_url)}</a>` : '<span class="empty">not posted</span>';
+  const cost = p.cost.length ? `<table class="cost"><thead><tr><th>When</th><th>Provider</th><th>Kind</th><th>USD</th></tr></thead><tbody>
+    ${p.cost.map(c => `<tr><td>${wibShort(c.at)}</td><td>${esc(c.provider)}${/STUB/.test(c.note||"") ? ' <span class="pill stub">STUB</span>' : ""}<br><span style="color:var(--mute);font-size:12px">${esc(c.agent)}</span></td><td>${esc(c.kind)}</td><td>$${(+c.usd).toFixed(2)}</td></tr>`).join("")}
+    </tbody><tfoot><tr><td colspan="3">Total</td><td>$${D.cost_total_usd.toFixed(2)}</td></tr></tfoot></table>
+    <div style="font-size:12px;color:var(--mute);margin-top:6px">Stub adapters log $0. Real runs log provider cost.</div>` : `<div class="empty">No paid runs yet.</div>`;
+  const notes = p.history.filter(h => h.action === "comment");
+  return `
+    <div class="panel"><h2>Schedule & publish</h2><dl class="kv">
+      <dt>Schedule</dt><dd>${p.schedule_at ? wib(p.schedule_at) + " WIB" : '<span class="empty">set at Gate 2</span>'}</dd>
+      <dt>Publisher</dt><dd>${esc(p.publisher)}${p.publisher === "manual" ? ' <span class="pill stub">STUB</span>' : ""}</dd>
+      <dt>Platforms</dt><dd>${p.platforms.map(x => `<span class="pill plat">${esc(x)}</span>`).join("")}</dd>
+      <dt>Post URL</dt><dd>${posted}</dd></dl></div>
+    <div class="panel"><h2>Voice</h2>${voice}</div>
+    <div class="panel"><h2>Cost<span class="sub">${p.cost.length} entries</span></h2>${cost}</div>
+    <div class="panel notes"><h2>Notes</h2>
+      ${notes.length ? notes.slice().reverse().map(n => `<div class="c"><small>${isHuman(n.actor) ? "Riftar" : esc(n.actor)} · ${wib(n.at)}</small>${esc(n.note)}</div>`).join("") : '<div class="empty" style="margin-bottom:10px">No notes yet. Agents read these too.</div>'}
+      <textarea id="noteTxt" placeholder="Add a note for the agents (no state change)" oninput="DRAFT.c=this.value; $('noteBtn').disabled=!this.value.trim()">${esc(DRAFT.c||"")}</textarea>
+      <div style="display:flex;gap:10px;align-items:center;margin-top:8px"><button class="pri" id="noteBtn" onclick="addNote()" ${DRAFT.c && DRAFT.c.trim() ? "" : "disabled"}>Add note</button><span class="err" id="nErr"></span></div>
+    </div>`;
+}
+
+function renderDetail() {
+  const p = D.post;
+  $("detail").innerHTML = `
+    <div class="crumb"><a href="#/">← Board</a> / ${esc(p.status)} / <span class="mono">${esc(p.id)}</span></div>
+    <div class="panel hd">
+      <div><span class="pill ${p.format}">${p.format}</span><span class="pill">${esc(p.pillar)}</span>${p.platforms.map(x => `<span class="pill plat">${esc(x)}</span>`).join("")}${p.example ? '<span class="pill ex">example data</span>' : ""}</div>
+      <h1>${esc(p.title)}</h1>
+      <div class="hook">“${esc(p.hook)}”</div>
+      <div class="meta">
+        <div><small>Stage</small><b>${esc(p.status)}</b>${D.gate || p.artifacts.some(a => a.provided_by === "human" && !a.path_or_url) ? '<br><span style="color:#b45309;font-size:13px;font-weight:600">⛳ waiting on you</span>' : ""}</div>
+        <div><small>Owner</small><b>${isHuman(p.owner) ? "Riftar" : esc(p.owner)}</b></div>
+        <div><small>Claim</small>${claimHtml(p.claim)}</div>
+        <div><small>Source repo</small><b><a href="https://github.com/${esc(p.source_repo)}" target="_blank">${esc(p.source_repo)}</a></b></div>
+      </div>
+      ${stepper(p)}
+    </div>
+    ${gateBox(p)}${requestBox(p)}
+    <div class="grid2">
+      <div>${contentPanel(p)}${assetsPanel(p)}${historyPanel(p)}</div>
+      <div>${sidePanels(p)}</div>
+    </div>`;
+  tick();
+}
+
+async function post(path, body, errEl) {
+  const r = await fetch(path, {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(body)});
+  if (!r.ok) { const e = await r.json(); $(errEl).textContent = `${e.error}: ${e.message}`; return false; }
+  DRAFT = {}; await loadDetail(D.post.id); return true;
+}
+function approve() {
+  const body = {id: D.post.id, comment: DRAFT.note || null};
+  if (D.gate === "gate2") body.at = (DRAFT.at || $("gAt").value) + ":00+07:00";
+  post("/api/approve", body, "gErr");
+}
+function reject() {
+  const c = (DRAFT.rj || "").trim(); if (!c) { $("gErr").textContent = "A comment is required."; return; }
+  post("/api/reject", {id: D.post.id, comment: c, return_to: D.gate === "gate2" ? (DRAFT.to || $("rjTo").value) : null}, "gErr");
+}
+function addNote() { post("/api/comment", {id: D.post.id, text: DRAFT.c}, "nErr"); }
+
+route();
+setInterval(() => { if (!D) loadBoard(); }, 5000);
 </script>
 </body>
 </html>

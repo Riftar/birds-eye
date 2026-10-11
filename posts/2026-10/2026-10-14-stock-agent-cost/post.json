@@ -19,7 +19,7 @@
       "required": true,
       "provided_by": "agent",
       "added_by": "agent:assets",
-      "added_at": "2026-10-11T19:04:29+07:00"
+      "added_at": "2026-10-11T19:22:21+07:00"
     },
     {
       "id": "a2",
@@ -28,7 +28,7 @@
       "required": true,
       "provided_by": "human",
       "added_by": "agent:assets",
-      "added_at": "2026-10-11T19:04:29+07:00",
+      "added_at": "2026-10-11T19:22:21+07:00",
       "request": "10s desk shot, laptop showing dashboard"
     }
   ],
@@ -44,7 +44,10 @@
   },
   "slides": [],
   "caption": "What it really costs to run my stock-analysis agent. (example)",
-  "hashtags": [],
+  "hashtags": [
+    "#buildinpublic",
+    "#aiagents"
+  ],
   "voice": {
     "provider": "elevenlabs",
     "voice_id": "TBD",
@@ -58,15 +61,15 @@
   "owner": "agent:assets",
   "claim": {
     "by": "agent:assets",
-    "until": "2026-10-11T19:34:29+07:00",
-    "token": "c-392d6c"
+    "until": "2026-10-11T19:54:05+07:00",
+    "token": "c-e11252"
   },
   "approved_by": "human",
-  "approved_at": "2026-10-11T19:04:29+07:00",
+  "approved_at": "2026-10-11T19:22:21+07:00",
   "review": null,
   "history": [
     {
-      "at": "2026-10-11T19:04:28+07:00",
+      "at": "2026-10-11T19:22:21+07:00",
       "actor": "agent:ideas",
       "action": "add",
       "from": null,
@@ -74,7 +77,7 @@
       "note": null
     },
     {
-      "at": "2026-10-11T19:04:29+07:00",
+      "at": "2026-10-11T19:22:21+07:00",
       "actor": "human",
       "action": "approve",
       "from": "idea",
@@ -82,7 +85,7 @@
       "note": null
     },
     {
-      "at": "2026-10-11T19:04:29+07:00",
+      "at": "2026-10-11T19:22:21+07:00",
       "actor": "agent:script",
       "action": "claim",
       "from": "approved",
@@ -90,15 +93,15 @@
       "note": "ttl 30m"
     },
     {
-      "at": "2026-10-11T19:04:29+07:00",
+      "at": "2026-10-11T19:22:21+07:00",
       "actor": "agent:script",
       "action": "update",
       "from": "approved",
       "to": "approved",
-      "note": "caption, script"
+      "note": "caption, script, hashtags"
     },
     {
-      "at": "2026-10-11T19:04:29+07:00",
+      "at": "2026-10-11T19:22:21+07:00",
       "actor": "agent:script",
       "action": "move",
       "from": "approved",
@@ -106,7 +109,7 @@
       "note": null
     },
     {
-      "at": "2026-10-11T19:04:29+07:00",
+      "at": "2026-10-11T19:22:21+07:00",
       "actor": "agent:assets",
       "action": "claim",
       "from": "scripted",
@@ -114,7 +117,7 @@
       "note": "ttl 30m"
     },
     {
-      "at": "2026-10-11T19:04:29+07:00",
+      "at": "2026-10-11T19:22:21+07:00",
       "actor": "agent:assets",
       "action": "attach",
       "from": "scripted",
@@ -122,12 +125,20 @@
       "note": "screenshot: capture/billing.png (example)"
     },
     {
-      "at": "2026-10-11T19:04:29+07:00",
+      "at": "2026-10-11T19:22:21+07:00",
       "actor": "agent:assets",
       "action": "request",
       "from": "scripted",
       "to": "scripted",
       "note": "footage: 10s desk shot, laptop showing dashboard"
+    },
+    {
+      "at": "2026-10-11T19:24:05+07:00",
+      "actor": "agent:assets",
+      "action": "claim",
+      "from": "scripted",
+      "to": "scripted",
+      "note": "ttl 30m"
     }
   ],
   "schedule_at": null,

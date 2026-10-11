@@ -19,7 +19,7 @@
       "required": true,
       "provided_by": "agent",
       "added_by": "agent:assets",
-      "added_at": "2026-10-11T19:04:28+07:00"
+      "added_at": "2026-10-11T19:22:21+07:00"
     },
     {
       "id": "a2",
@@ -28,7 +28,7 @@
       "required": true,
       "provided_by": "agent",
       "added_by": "agent:edit",
-      "added_at": "2026-10-11T19:04:28+07:00"
+      "added_at": "2026-10-11T19:22:21+07:00"
     },
     {
       "id": "a3",
@@ -37,7 +37,7 @@
       "required": true,
       "provided_by": "agent",
       "added_by": "agent:edit",
-      "added_at": "2026-10-11T19:04:28+07:00"
+      "added_at": "2026-10-11T19:22:21+07:00"
     },
     {
       "id": "a4",
@@ -46,7 +46,7 @@
       "required": true,
       "provided_by": "agent",
       "added_by": "agent:edit",
-      "added_at": "2026-10-11T19:04:28+07:00"
+      "added_at": "2026-10-11T19:22:21+07:00"
     },
     {
       "id": "a5",
@@ -55,7 +55,7 @@
       "required": true,
       "provided_by": "agent",
       "added_by": "agent:edit",
-      "added_at": "2026-10-11T19:04:28+07:00"
+      "added_at": "2026-10-11T19:22:21+07:00"
     },
     {
       "id": "a6",
@@ -64,7 +64,7 @@
       "required": true,
       "provided_by": "agent",
       "added_by": "agent:edit",
-      "added_at": "2026-10-11T19:04:29+07:00"
+      "added_at": "2026-10-11T19:22:21+07:00"
     }
   ],
   "script": null,
@@ -101,17 +101,24 @@
     }
   ],
   "caption": "Same pages, two models, very different answers. (example)",
-  "hashtags": [],
+  "hashtags": [
+    "#buildinpublic",
+    "#aiagents"
+  ],
   "voice": null,
   "status": "review",
-  "owner": "agent:edit",
-  "claim": null,
+  "owner": "agent:publish",
+  "claim": {
+    "by": "agent:publish",
+    "until": "2026-10-11T19:52:21+07:00",
+    "token": "c-e05743"
+  },
   "approved_by": "human",
-  "approved_at": "2026-10-11T19:04:28+07:00",
+  "approved_at": "2026-10-11T19:22:21+07:00",
   "review": null,
   "history": [
     {
-      "at": "2026-10-11T19:04:28+07:00",
+      "at": "2026-10-11T19:22:21+07:00",
       "actor": "agent:ideas",
       "action": "add",
       "from": null,
@@ -119,7 +126,7 @@
       "note": null
     },
     {
-      "at": "2026-10-11T19:04:28+07:00",
+      "at": "2026-10-11T19:22:21+07:00",
       "actor": "human",
       "action": "approve",
       "from": "idea",
@@ -127,7 +134,7 @@
       "note": "Strong hook, honest numbers"
     },
     {
-      "at": "2026-10-11T19:04:28+07:00",
+      "at": "2026-10-11T19:22:21+07:00",
       "actor": "agent:script",
       "action": "claim",
       "from": "approved",
@@ -135,15 +142,15 @@
       "note": "ttl 30m"
     },
     {
-      "at": "2026-10-11T19:04:28+07:00",
+      "at": "2026-10-11T19:22:21+07:00",
       "actor": "agent:script",
       "action": "update",
       "from": "approved",
       "to": "approved",
-      "note": "caption, slides"
+      "note": "caption, slides, hashtags"
     },
     {
-      "at": "2026-10-11T19:04:28+07:00",
+      "at": "2026-10-11T19:22:21+07:00",
       "actor": "agent:script",
       "action": "move",
       "from": "approved",
@@ -151,7 +158,7 @@
       "note": null
     },
     {
-      "at": "2026-10-11T19:04:28+07:00",
+      "at": "2026-10-11T19:22:21+07:00",
       "actor": "agent:assets",
       "action": "claim",
       "from": "scripted",
@@ -159,7 +166,7 @@
       "note": "ttl 30m"
     },
     {
-      "at": "2026-10-11T19:04:28+07:00",
+      "at": "2026-10-11T19:22:21+07:00",
       "actor": "agent:assets",
       "action": "attach",
       "from": "scripted",
@@ -167,7 +174,7 @@
       "note": "screenshot: capture/listing-diff.png (example)"
     },
     {
-      "at": "2026-10-11T19:04:28+07:00",
+      "at": "2026-10-11T19:22:21+07:00",
       "actor": "agent:assets",
       "action": "move",
       "from": "scripted",
@@ -175,7 +182,7 @@
       "note": null
     },
     {
-      "at": "2026-10-11T19:04:28+07:00",
+      "at": "2026-10-11T19:22:21+07:00",
       "actor": "agent:edit",
       "action": "claim",
       "from": "assets",
@@ -183,7 +190,7 @@
       "note": "ttl 30m"
     },
     {
-      "at": "2026-10-11T19:04:28+07:00",
+      "at": "2026-10-11T19:22:21+07:00",
       "actor": "agent:edit",
       "action": "attach",
       "from": "assets",
@@ -191,7 +198,7 @@
       "note": "slide: posts/2026-10/2026-10-12-dealscout-listings/out/slides/slide-01.png.txt"
     },
     {
-      "at": "2026-10-11T19:04:28+07:00",
+      "at": "2026-10-11T19:22:21+07:00",
       "actor": "agent:edit",
       "action": "attach",
       "from": "assets",
@@ -199,7 +206,7 @@
       "note": "slide: posts/2026-10/2026-10-12-dealscout-listings/out/slides/slide-02.png.txt"
     },
     {
-      "at": "2026-10-11T19:04:28+07:00",
+      "at": "2026-10-11T19:22:21+07:00",
       "actor": "agent:edit",
       "action": "attach",
       "from": "assets",
@@ -207,7 +214,7 @@
       "note": "slide: posts/2026-10/2026-10-12-dealscout-listings/out/slides/slide-03.png.txt"
     },
     {
-      "at": "2026-10-11T19:04:28+07:00",
+      "at": "2026-10-11T19:22:21+07:00",
       "actor": "agent:edit",
       "action": "attach",
       "from": "assets",
@@ -215,7 +222,7 @@
       "note": "slide: posts/2026-10/2026-10-12-dealscout-listings/out/slides/slide-04.png.txt"
     },
     {
-      "at": "2026-10-11T19:04:29+07:00",
+      "at": "2026-10-11T19:22:21+07:00",
       "actor": "agent:edit",
       "action": "attach",
       "from": "assets",
@@ -223,7 +230,7 @@
       "note": "slide: posts/2026-10/2026-10-12-dealscout-listings/out/slides/slide-05.png.txt"
     },
     {
-      "at": "2026-10-11T19:04:29+07:00",
+      "at": "2026-10-11T19:22:21+07:00",
       "actor": "agent:edit",
       "action": "move",
       "from": "assets",
@@ -231,7 +238,7 @@
       "note": "carousel skips voiced"
     },
     {
-      "at": "2026-10-11T19:04:29+07:00",
+      "at": "2026-10-11T19:22:21+07:00",
       "actor": "agent:edit",
       "action": "claim",
       "from": "edited",
@@ -239,12 +246,20 @@
       "note": "ttl 30m"
     },
     {
-      "at": "2026-10-11T19:04:29+07:00",
+      "at": "2026-10-11T19:22:21+07:00",
       "actor": "agent:edit",
       "action": "move",
       "from": "edited",
       "to": "review",
       "note": null
+    },
+    {
+      "at": "2026-10-11T19:22:21+07:00",
+      "actor": "agent:publish",
+      "action": "claim",
+      "from": "review",
+      "to": "review",
+      "note": "ttl 30m"
     }
   ],
   "schedule_at": null,
@@ -258,13 +273,13 @@
   "notes": "",
   "cost": [
     {
-      "at": "2026-10-11T19:04:29+07:00",
+      "at": "2026-10-11T19:22:21+07:00",
       "provider": "carousel-renderer",
       "kind": "render",
       "units": 5,
       "usd": 0.0,
       "agent": "agent:edit",
-      "run_id": "stub-6f51ea",
+      "run_id": "stub-27b937",
       "approved_override": null,
       "note": "STUB: internal renderer, placeholders only"
     }

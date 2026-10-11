@@ -1,0 +1,31 @@
+{"at": "2026-10-11T19:22:21+07:00", "actor": "agent:ideas", "command": "add", "post": "2026-10-12-dealscout-listings", "result": "ok", "error": null}
+{"at": "2026-10-11T19:22:21+07:00", "actor": "agent:ideas", "command": "add", "post": "2026-10-13-tiktok-viral-sleep", "result": "ok", "error": null}
+{"at": "2026-10-11T19:22:21+07:00", "actor": "agent:ideas", "command": "add", "post": "2026-10-14-stock-agent-cost", "result": "ok", "error": null}
+{"at": "2026-10-11T19:22:21+07:00", "actor": "human", "command": "approve", "post": "2026-10-12-dealscout-listings", "result": "ok", "error": null}
+{"at": "2026-10-11T19:22:21+07:00", "actor": "agent:script", "command": "claim", "post": "2026-10-12-dealscout-listings", "result": "ok", "error": null}
+{"at": "2026-10-11T19:22:21+07:00", "actor": "agent:script", "command": "update", "post": "2026-10-12-dealscout-listings", "result": "ok", "error": null}
+{"at": "2026-10-11T19:22:21+07:00", "actor": "agent:script", "command": "move", "post": "2026-10-12-dealscout-listings", "result": "ok", "error": null}
+{"at": "2026-10-11T19:22:21+07:00", "actor": "agent:assets", "command": "claim", "post": "2026-10-12-dealscout-listings", "result": "ok", "error": null}
+{"at": "2026-10-11T19:22:21+07:00", "actor": "agent:assets", "command": "attach", "post": "2026-10-12-dealscout-listings", "result": "ok", "error": null}
+{"at": "2026-10-11T19:22:21+07:00", "actor": "agent:assets", "command": "move", "post": "2026-10-12-dealscout-listings", "result": "ok", "error": null}
+{"at": "2026-10-11T19:22:21+07:00", "actor": "agent:edit", "command": "claim", "post": "2026-10-12-dealscout-listings", "result": "ok", "error": null}
+{"at": "2026-10-11T19:22:21+07:00", "actor": "agent:edit", "command": "attach", "post": "2026-10-12-dealscout-listings", "result": "ok", "error": null}
+{"at": "2026-10-11T19:22:21+07:00", "actor": "agent:edit", "command": "attach", "post": "2026-10-12-dealscout-listings", "result": "ok", "error": null}
+{"at": "2026-10-11T19:22:21+07:00", "actor": "agent:edit", "command": "attach", "post": "2026-10-12-dealscout-listings", "result": "ok", "error": null}
+{"at": "2026-10-11T19:22:21+07:00", "actor": "agent:edit", "command": "attach", "post": "2026-10-12-dealscout-listings", "result": "ok", "error": null}
+{"at": "2026-10-11T19:22:21+07:00", "actor": "agent:edit", "command": "attach", "post": "2026-10-12-dealscout-listings", "result": "ok", "error": null}
+{"at": "2026-10-11T19:22:21+07:00", "actor": "agent:edit", "command": "cost", "post": "2026-10-12-dealscout-listings", "result": "ok", "error": null}
+{"at": "2026-10-11T19:22:21+07:00", "actor": "agent:edit", "command": "move", "post": "2026-10-12-dealscout-listings", "result": "ok", "error": null}
+{"at": "2026-10-11T19:22:21+07:00", "actor": "agent:edit", "command": "claim", "post": "2026-10-12-dealscout-listings", "result": "ok", "error": null}
+{"at": "2026-10-11T19:22:21+07:00", "actor": "agent:edit", "command": "move", "post": "2026-10-12-dealscout-listings", "result": "ok", "error": null}
+{"at": "2026-10-11T19:22:21+07:00", "actor": "agent:publish", "command": "claim", "post": "2026-10-12-dealscout-listings", "result": "ok", "error": null}
+{"at": "2026-10-11T19:22:21+07:00", "actor": "agent:publish", "command": "move", "post": "2026-10-12-dealscout-listings", "result": "refused", "error": "HUMAN_ONLY", "message": "review -> scheduled is a human gate; use `approve`/`reject`"}
+{"at": "2026-10-11T19:22:21+07:00", "actor": "human", "command": "approve", "post": "2026-10-14-stock-agent-cost", "result": "ok", "error": null}
+{"at": "2026-10-11T19:22:21+07:00", "actor": "agent:script", "command": "claim", "post": "2026-10-14-stock-agent-cost", "result": "ok", "error": null}
+{"at": "2026-10-11T19:22:21+07:00", "actor": "agent:script", "command": "update", "post": "2026-10-14-stock-agent-cost", "result": "ok", "error": null}
+{"at": "2026-10-11T19:22:21+07:00", "actor": "agent:script", "command": "move", "post": "2026-10-14-stock-agent-cost", "result": "ok", "error": null}
+{"at": "2026-10-11T19:22:21+07:00", "actor": "agent:assets", "command": "claim", "post": "2026-10-14-stock-agent-cost", "result": "ok", "error": null}
+{"at": "2026-10-11T19:22:21+07:00", "actor": "agent:assets", "command": "attach", "post": "2026-10-14-stock-agent-cost", "result": "ok", "error": null}
+{"at": "2026-10-11T19:22:21+07:00", "actor": "agent:assets", "command": "attach", "post": "2026-10-14-stock-agent-cost", "result": "ok", "error": null}
+{"at": "2026-10-11T19:22:21+07:00", "actor": "agent:assets", "command": "move", "post": "2026-10-14-stock-agent-cost", "result": "refused", "error": "MISSING_ASSETS", "message": "footage (human): 10s desk shot, laptop showing dashboard"}
+{"at": "2026-10-11T19:24:05+07:00", "actor": "agent:assets", "command": "claim", "post": "2026-10-14-stock-agent-cost", "result": "ok", "error": null}

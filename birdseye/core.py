@@ -127,11 +127,13 @@ def locked(post_id):
         os.unlink(lock)
 
 
-def log_activity(actor, command, post_id, result, code=None):
+def log_activity(actor, command, post_id, result, code=None, message=None):
     d = root() / "logs" / "activity"
     d.mkdir(parents=True, exist_ok=True)
     line = {"at": iso(now()), "actor": actor, "command": command,
             "post": post_id, "result": result, "error": code}
+    if message:
+        line["message"] = message
     with open(d / f"{now().date()}.jsonl", "a") as f:
         f.write(json.dumps(line) + "\n")
 
@@ -151,7 +153,7 @@ def mutate(post_id, actor, command, fn):
         log_activity(actor, command, post_id, "ok")
         return post
     except BirdsEyeError as e:
-        log_activity(actor, command, post_id, "refused", e.code)
+        log_activity(actor, command, post_id, "refused", e.code, e.message)
         raise
 
 
@@ -300,8 +302,16 @@ def move(post_id, actor, to, token=None, note=None, url=None):
     return mutate(post_id, actor, "move", fn)
 
 
+def _human_or_log(actor, command, post_id):
+    try:
+        require_human(actor)
+    except BirdsEyeError as e:
+        log_activity(actor, command, post_id, "refused", e.code, e.message)
+        raise
+
+
 def approve(post_id, actor, comment=None, schedule_at=None, publisher="manual"):
-    require_human(actor)
+    _human_or_log(actor, "approve", post_id)
 
     def fn(post):
         st = post["status"]
@@ -324,7 +334,7 @@ def approve(post_id, actor, comment=None, schedule_at=None, publisher="manual"):
 
 
 def reject(post_id, actor, comment, return_to=None):
-    require_human(actor)
+    _human_or_log(actor, "reject", post_id)
     if not comment:
         raise BirdsEyeError("SCHEMA_INVALID", "reject needs --comment")
 
@@ -429,3 +439,102 @@ def waiting_on_human(posts=None):
             if a.get("provided_by") == HUMAN and not a.get("path_or_url") and p["status"] not in SIDE:
                 out.append({"id": p["id"], "kind": "footage", "what": f"Shoot: {a.get('request')}"})
     return out
+
+
+# ---------- detail view helpers ----------
+
+def comment(post_id, actor, text):
+    """Note on a post, no state change. Anyone may comment (no claim needed)."""
+    text = (text or "").strip()
+
+    def fn(post):
+        if not text:
+            raise BirdsEyeError("SCHEMA_INVALID", "comment text is required")
+        if len(text) > 2000:
+            raise BirdsEyeError("SCHEMA_INVALID", "comment too long (max 2000 chars)")
+        _history(post, actor, "comment", post["status"], post["status"], text)
+    return mutate(post_id, actor, "comment", fn)
+
+
+def stage_path(post):
+    """Stages this post walks through (carousels skip voiced)."""
+    return [s for s in STAGES if not (s == "voiced" and post["format"] == "carousel")]
+
+
+def file_link(post, path):
+    """Root-relative path if the artifact file exists on disk, else None.
+    Accepts root-relative paths or paths relative to the post folder."""
+    if not path:
+        return None
+    for cand in (root() / path, root() / "posts" / post["id"][:7] / post["id"] / path):
+        try:
+            if cand.resolve().is_file() and posts_dir().resolve() in cand.resolve().parents:
+                return str(cand.resolve().relative_to(root()))
+        except OSError:
+            pass
+    return None
+
+
+def asset_checklist(post):
+    """Everything the post needs, grouped by the stage that requires it.
+    Each item: {stage, label, state: done|missing|requested, path, by}."""
+    items = []
+    fmt, arts = post["format"], post["artifacts"]
+
+    def add(stage, label, ok, path=None, by=None, state=None):
+        items.append({"stage": stage, "label": label, "state": state or ("done" if ok else "missing"),
+                      "path": path, "file": file_link(post, path), "by": by})
+
+    if fmt == "short":
+        add("scripted", "Script beats", bool(post.get("script") and post["script"].get("beats")),
+            (post.get("script") or {}).get("path"))
+    else:
+        add("scripted", f"Slides (3-10), have {len(post['slides'])}", 3 <= len(post["slides"]) <= 10)
+    add("scripted", "Caption", bool(post["caption"]))
+    for a in arts:
+        if a["kind"] in ("voice", "render", "slide"):
+            continue
+        if a.get("provided_by") == HUMAN and not a.get("path_or_url"):
+            add("assets", f"{a['kind'].title()}: {a.get('request')}", False, by=HUMAN, state="requested")
+        else:
+            add("assets", a["kind"].title() + ("" if a.get("required") else " (optional)"),
+                bool(a.get("path_or_url")), a.get("path_or_url"),
+                HUMAN if a.get("provided_by") == HUMAN else a.get("added_by"))
+    if fmt == "short":
+        v = next((a for a in arts if a["kind"] == "voice" and a.get("path_or_url")), None)
+        add("voiced", "Voiceover", bool(v), v and v["path_or_url"], v and v["added_by"])
+        r = next((a for a in arts if a["kind"] == "render" and a.get("path_or_url")), None)
+        add("edited", "Render (mp4)", bool(r), r and r["path_or_url"], r and r["added_by"])
+    else:
+        slides = [a for a in arts if a["kind"] == "slide" and a.get("path_or_url")]
+        for s in post["slides"]:
+            a = slides[s["n"] - 1] if s["n"] <= len(slides) else None
+            add("edited", f"Slide {s['n']} PNG", bool(a), a and a["path_or_url"], a and a["added_by"])
+    add("posted", "Post URL", bool(post.get("post_url") or post.get("publisher_post_id")), post.get("post_url"))
+    return items
+
+
+def refused_attempts(post_id):
+    """Refused calls for this post from logs/activity/*.jsonl (oldest first)."""
+    out = []
+    for f in sorted((root() / "logs" / "activity").glob("*.jsonl")):
+        for line in f.read_text().splitlines():
+            try:
+                e = json.loads(line)
+            except ValueError:
+                continue
+            if e.get("post") == post_id and e.get("result") == "refused":
+                out.append(e)
+    return out
+
+
+def detail(post_id):
+    """Everything the card detail view needs, in one call."""
+    post = load(post_id)
+    gate = "gate1" if post["status"] == "idea" else "gate2" if post["status"] == "review" else None
+    return {"post": post, "stages": stage_path(post), "gate": gate,
+            "next": next_stage(post), "missing_next": missing_for(post, next_stage(post)) if next_stage(post) else [],
+            "checklist": asset_checklist(post), "refused": refused_attempts(post_id),
+            "return_to_options": [s for s in stage_path(post) if s in STAGES[2:STAGES.index("review")]],
+            "cost_total_usd": round(sum(c.get("usd") or 0 for c in post["cost"]), 4),
+            "now": iso(now())}

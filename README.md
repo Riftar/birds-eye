@@ -4,7 +4,19 @@ Birds Eye is a personal content workflow plus dashboard for carousels and short 
 
 > **This is a throwaway prototype** that shows the high-level flow. It uses only the Python 3 standard library, so nothing needs installing. The full spec is in [docs/spec.md](docs/spec.md), and the build plan for the real tool is in [NEXT.md](NEXT.md).
 
-![dashboard](docs/dashboard.png)
+## Screenshots
+
+**Board**: kanban by stage plus "Waiting on you". Click any card to open its detail page (`#/post/<id>`).
+
+![board](docs/dashboard.png)
+
+**Card detail, DealScout carousel at Gate 2 (review)**: stage stepper (voiced skipped), live claim countdown, Approve & schedule / Reject (comment required, choose the return stage), slide thumbnails, assets checklist, cost, and a history that includes the refused gate attempt.
+
+![card detail at review](docs/card-detail-review.png)
+
+**Card detail, stock-agent short at scripted**: the open "requested from Riftar" desk-footage item blocks `assets`, with the exact command to attach it once it's shot.
+
+![card detail at scripted](docs/card-detail-scripted.png)
 
 ## Flow
 
@@ -45,7 +57,7 @@ CLI (all commands take `--as <actor>` and `--json`):
 
 ```
 add · list [--blocked-on human] · show · claim · move <id> <stage> · update · attach [--request]
-approve · reject --comment [--return-to] · run voice|render|carousel · publish · status · serve · init-human
+approve · reject --comment [--return-to] · comment --text · run voice|render|carousel · publish · status · serve · init-human
 ```
 
 Example agent session:
@@ -73,9 +85,10 @@ python3 -m birdseye --as human approve 2026-10-13-tiktok-viral-sleep
 | State machine, carousel skip, backward-with-note, required fields per stage | real (subset of spec section 4) |
 | Gates 1 and 2, human-only reject, R4 footage rule | real, but the "human key" is only a file-exists check |
 | Claims (TTL, token, expiry, release on move) | real |
-| Activity log `logs/activity/*.jsonl` | real (gitignored) |
+| Activity log `logs/activity/*.jsonl`, including refused calls with their reason | real (committed so the seeded refused attempts show up; `logs/cost/` is gitignored) |
 | Voice (ElevenLabs, then Nexabot fallback), HyperFrames render, carousel PNGs | **STUB**: writes placeholder `.txt` files and a `$0` cost entry labelled STUB |
 | Publisher | **STUB** manual: writes `publish/<year>-w<N>.json` with a checklist |
-| Dashboard | stdlib `http.server` plus one HTML page that polls every 5s. Approve/reject act as human, with **no auth** (localhost only) |
+| Dashboard | stdlib `http.server` plus one HTML page: a board, and a card detail page with gates, content, assets checklist, voice, schedule, cost, history (including refused attempts from `logs/activity`), and notes. Approve, reject, and comment act as human, with **no auth** (localhost only) |
+| Dashboard API | `GET /api/posts`, `GET /api/post?id=` (detail bundle from `core.detail`), `POST /api/approve` / `api/reject` / `api/comment`, `GET /files/<path>` (read-only, only inside `posts/`) | real |
 | MCP server | **STUB**: `mcp/tools.py` only lists the tool names |
 | JSON Schema validation, calendar view, asset rules, cost caps, metrics, neatlogs | not built, see NEXT.md |
